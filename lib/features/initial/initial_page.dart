@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app_template/features/initial/initial_event.dart';
 import 'package:flutter_app_template/features/initial/initial_state.dart';
 import 'package:template_package/base_widget/base_widget.dart';
 import 'package:template_package/template_bloc/template_bloc.dart';
@@ -18,50 +17,82 @@ class _InitialPageState extends BaseState<InitialPage, BaseBloc> {
   Widget build(BuildContext context) => mainWidget();
 
   Widget mainWidget() {
-    return StreamBuilder<InitialDataState>(
-        stream: bloc.getStreamOfType<InitialDataState>(),
-        builder: (BuildContext context, AsyncSnapshot<InitialDataState> snapshot) {
+    return StreamBuilder<ScoreDataState>(
+        stream: bloc.getStreamOfType<ScoreDataState>(),
+        builder: (BuildContext context, AsyncSnapshot<ScoreDataState> snapshot) {
           return Scaffold(
-              floatingActionButton: saveButton(),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-              appBar: AppBar(centerTitle: true, title: Text(snapshot.data?.appName ?? "")),
               body: Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  getCustomWidget(snapshot.data?.isHorizontalStyle ?? false),
-                  SizedBox(height: 50),
-                  Text('${translate('app_package')}:\n ${snapshot.data?.appPackage ?? ''}'),
-                  SizedBox(height: 20),
-                  Text('${translate('app_name')}:\n ${snapshot.data?.appName ?? ''}'),
-                  SizedBox(height: 20),
-                  Text('${translate('app_version')}:\n ${snapshot.data?.appVersion ?? ''}'),
-                ],
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Flexible(child: prizeWidget()),
+                    ...snapshot.data!.opponents.map((e) => track(e.name, e.points)),
+                    SizedBox(height: 30),
+                    buttons(),
+                    SizedBox(height: 30),
+                  ],
+                ),
               )));
         });
   }
 
-  Widget saveButton() {
+  Widget prizeWidget() {
+    return Column(
+      children: [
+        Text('PREMIO', style: TextStyle(fontSize: 40)),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Flexible(child: Image.asset('assets/images/rc-car-removebg-preview.png'))]),
+      ],
+    );
+  }
+
+  Widget track(String userName, int points) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(userName),
+            SizedBox(width: 8),
+            Text(points.toString(), style: TextStyle(fontSize: 11)),
+          ],
+        ),
+        SizedBox(height: 8),
+        LinearProgressIndicator(value: points / 100),
+      ],
+    );
+  }
+
+  Widget buttons() {
+    return Container();
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 30.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
-                onPressed: () {
-                  bloc.event.add(SaveDataEvent('analytic_event_name_set', 'some data'));
-                },
-                child: Text(translate('save_data'))),
-            ElevatedButton(
-                onPressed: () {
-                  bloc.event.add(GetDataEvent('analytic_event_name_get'));
-                },
-                child: Text(translate('get_data'))),
+            addRemoveButton('Francy'),
+            addRemoveButton('Gabry'),
           ],
         ),
       ),
+    );
+  }
+
+  Widget addRemoveButton(String name) {
+    return Row(
+      children: [
+        FloatingActionButton(onPressed: () {}, child: Icon(Icons.remove)),
+        Padding(padding: const EdgeInsets.all(12.0), child: Text(name)),
+        FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
+      ],
     );
   }
 

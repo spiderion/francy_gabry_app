@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_app_template/core/configuration/remote_config.dart';
 import 'package:flutter_app_template/core/data/dao.dart';
@@ -18,7 +19,7 @@ class CoreSubModule extends ISubModule {
     return _analytics!;
   }
 
-  Dao dao() => DataBase({});
+  Dao dao() => DataBase(FirebaseFirestore.instance);
 
   RemoteConfiguration remoteConfig() => RemoteConfig();
 

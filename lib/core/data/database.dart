@@ -1,19 +1,22 @@
-import 'package:flutter_app_template/core/data/db_paths.dart';
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'dao.dart';
 
 class DataBase extends Dao {
-  final Map<String, dynamic> _db;
+  FirebaseFirestore _db;
 
   DataBase(this._db);
 
   @override
-  Future<dynamic> getSomeData() async {
-    return _db[DbPaths.SOME_DATA_KEY];
+  Stream<List<Map<String, dynamic>>> getStreamData() {
+    final streamResult = _db.collection("OPPONENTS").snapshots();
+    return streamResult.transform(StreamTransformer.fromHandlers(handleData: (data, sink) {
+      sink.add(data.docs.map((e) => e.data()).toList());
+    }));
   }
 
   @override
-  Future<dynamic> setSomeData(dynamic someData) async {
-    _db[DbPaths.SOME_DATA_KEY] = someData;
-  }
+  Future<dynamic> setSomeData(dynamic someData) async {}
 }

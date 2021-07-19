@@ -1,19 +1,8 @@
+import 'package:flutter_app_template/core/models/opponent.dart';
 import 'package:template_package/template_package.dart';
 
-class InitialDataState extends BaseBlocDataState {
-  final String text;
-  final String appName;
-  final String someData;
-  final bool isHorizontalStyle;
-  final String appPackage;
-  final String appVersion;
+class ScoreDataState extends BaseBlocDataState {
+  final List<Opponent> opponents;
 
-  InitialDataState({
-    required this.text,
-    required this.appName,
-    this.someData = '',
-    this.isHorizontalStyle = false,
-    this.appPackage = 'unknown',
-    this.appVersion = 'unknown',
-  });
+  ScoreDataState({required this.opponents});
 }

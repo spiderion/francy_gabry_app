@@ -10,8 +10,10 @@ class InitialRepository extends BaseRepository {
 
   Future<void> getSomeData(RequestObserver<dynamic, SomeModel?> requestBehaviour) async {
     try {
-      final result = await _dao.getSomeData();
-      requestBehaviour.onListen?.call(SomeModel.fromJson(result));
+      final Stream<List<Map<String, dynamic>>> streamResult = _dao.getStreamData();
+      streamResult.listen((event) {
+        requestBehaviour.onListen?.call(SomeModel.fromJson(event));
+      });
     } catch (e, s) {
       requestBehaviour.onError?.call(ServerError(message: e.toString()));
       requestBehaviour.onDone?.call();

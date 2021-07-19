@@ -1,11 +1,14 @@
+import 'package:flutter_app_template/core/models/opponent.dart';
+
 class SomeModel {
-  final String someData;
-  static const someData_key = "someData";
+  final List<Opponent> opponents;
+  static const opponents_key = "opponents";
 
-  SomeModel(this.someData);
+  SomeModel(this.opponents);
 
-  Map<String, dynamic> toJson({bool isStoreLocal = false}) => {someData_key: someData};
+  Map<String, dynamic> toJson({bool isStoreLocal = false}) => {opponents_key: opponents};
 
   @override
-  SomeModel.fromJson(Map<String, dynamic>? json) : someData = (json ?? {})[someData_key];
+  SomeModel.fromJson(List<Map<String, dynamic>>? json)
+      : opponents = json?.map((e) => Opponent.fromJson(e)).toList() ?? [];
 }
