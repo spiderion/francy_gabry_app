@@ -23,3 +23,9 @@ class AddPointEvent extends BaseBlocEvent {
 
   AddPointEvent(String analytic, {required this.opponent}) : super(analytic);
 }
+
+class PrizeLongPressedEvent extends BaseBlocEvent {
+  final dynamic variable;
+
+  PrizeLongPressedEvent(String analytic, {this.variable}) : super(analytic);
+}

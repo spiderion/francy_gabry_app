@@ -31,4 +31,10 @@ class DataBase extends Dao {
     final result = await _db.collection('PRIZE').doc('PRIZE').get();
     return result.data();
   }
+
+  @override
+  Future<void> saveImageUrl(String imageUrl) async{
+      final result = await _db.collection('PRIZE').doc('PRIZE').update({'imageUrl' :imageUrl });
+      return result;
+  }
 }

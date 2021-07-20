@@ -55,12 +55,20 @@ class _InitialPageState extends BaseState<InitialPage, BaseBloc> {
         stream: bloc.getStreamOfType<PrizeDateState>(),
         builder: (context, AsyncSnapshot<PrizeDateState> snapshot) {
           if (snapshot.data == null) return Center(child: Text('Loading'));
-          return Column(
-            children: [
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Flexible(child: Image.network(snapshot.data!.imageUrl))]),
-            ],
+          return InkWell(
+            onLongPress: () {
+              if (!kIsWeb) bloc.event.add(PrizeLongPressedEvent('on_prize_long_pressed'));
+            },
+            child: Column(
+              children: [
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Flexible(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(snapshot.data!.imageUrl)))
+                ]),
+              ],
+            ),
           );
         });
   }

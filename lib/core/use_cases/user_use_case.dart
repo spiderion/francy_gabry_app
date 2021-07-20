@@ -24,10 +24,14 @@ class SomeUseCase extends UseCase<ResultModel, ResultModel, InitialRepository> {
   }
 
   void setPoints(RequestObserver<Opponent, dynamic> requestObserver) async {
-     repository.setPoints(requestObserver);
+    repository.setPoints(requestObserver);
   }
 
   void getPrizeUrl(RequestObserver<dynamic, String> requestObserver) {
     repository.getPrizeUrl(requestObserver);
+  }
+
+  void saveImageUrl(RequestObserver<String, String> requestObserver) {
+    repository.saveImageUrl(requestObserver);
   }
 }

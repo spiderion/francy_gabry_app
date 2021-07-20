@@ -6,4 +6,6 @@ abstract class Dao {
   Future<void> setPoints(String userID, int newPoints);
 
   Future<Map<String, dynamic>?> getPrizeUrl();
+
+  Future<void> saveImageUrl(String imageUrl);
 }
