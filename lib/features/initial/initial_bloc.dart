@@ -12,31 +12,66 @@ import 'package:template_package/template_bloc/template_bloc.dart';
 import 'package:template_package/template_package.dart';
 
 class InitialBloc extends TemplateBloc {
-  final SomeUseCase someUseCase;
-  final StreamController initialDataStateController = StreamController<ScoreDataState>();
+  final SomeUseCase useCase;
+  final scoreDataStateController = StreamController<ScoreDataState>();
+  final prizeDataState = StreamController<PrizeDateState>();
 
-  InitialBloc(BaseAnalytics analytics, this.someUseCase) : super(analytics) {
-    registerStreams([initialDataStateController.stream]);
+  InitialBloc(BaseAnalytics analytics, this.useCase) : super(analytics) {
+    registerStreams([
+      scoreDataStateController.stream,
+      prizeDataState.stream,
+    ]);
     init();
   }
 
   void init() async {
-    initialDataStateController.sink.add(ScoreDataState(opponents: []));
-    fetchData();
+    scoreDataStateController.sink.add(ScoreDataState(opponents: []));
+    fetchScoreData();
+    fetchPrizeData();
   }
 
   @override
   void onUiDataChange(BaseBlocEvent event) {
-    if (event is SaveDataEvent) {
-      saveData(event.data);
-    } else if (event is GetDataEvent) {}
+    if (event is RemovePointEvent) {
+      removePoint(event.opponent);
+    } else if (event is AddPointEvent) {
+      addPoint(event.opponent);
+    }
   }
 
-  void fetchData() {
-    someUseCase.getSomeData(RequestObserver(onListen: (SomeModel? someModel) {
+  void fetchPrizeData() {
+    final requestObserver = RequestObserver(onListen: (String? imageUrl) {
+      prizeDataState.sink.add(PrizeDateState(imageUrl: imageUrl ?? ''));
+    }, onError: (Error e) {
+      LoggerDefault.log.e('error could not get prize url');
+    });
+    useCase.getPrizeUrl(requestObserver);
+  }
+
+  void removePoint(Opponent opponent) {
+    opponent.points = opponent.points - 1;
+    setPoint(opponent);
+  }
+
+  void addPoint(Opponent opponent) {
+    opponent.points = opponent.points + 1;
+    setPoint(opponent);
+  }
+
+  void setPoint(Opponent opponent) {
+    final requestObserver = RequestObserver(
+        requestData: opponent,
+        onListen: (SomeModel? someModel) {},
+        onError: (Error e) {
+          LoggerDefault.log.e('error could not set points');
+        });
+    useCase.setPoints(requestObserver);
+  }
+
+  void fetchScoreData() {
+    useCase.getSomeData(RequestObserver(onListen: (SomeModel? someModel) {
       final List<Opponent> opponentsResult = someModel?.opponents ?? [];
-      opponentsResult.sort((a, b) => a.points.compareTo(b.points));
-      initialDataStateController.sink.add(ScoreDataState(opponents: opponentsResult.reversed.toList()));
+      scoreDataStateController.sink.add(ScoreDataState(opponents: opponentsResult.toList()));
     }, onError: (Error e) {
       sinkState?.add(ErrorFullScreenState(
           error: e,
@@ -46,17 +81,10 @@ class InitialBloc extends TemplateBloc {
     }));
   }
 
-  void saveData(String data) {
-/*    final someModel = SomeModel('some data');
-    someUseCase.setSomeData(RequestObserver(
-        requestData: someModel,
-        onListen: (_) => sinkState?.add(MessageInfoState("saved")),
-        onError: (e) => sinkState?.add(ErrorState(error: e))));*/
-  }
-
   @override
   void dispose() {
-    initialDataStateController.close();
+    scoreDataStateController.close();
+    prizeDataState.close();
     super.dispose();
   }
 }

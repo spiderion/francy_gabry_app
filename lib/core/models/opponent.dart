@@ -1,7 +1,7 @@
 class Opponent {
   final String name;
   final String id;
-  final int points;
+  int points;
   static const id_key = "id";
   static const name_key = "name";
   static const points_key = "points";

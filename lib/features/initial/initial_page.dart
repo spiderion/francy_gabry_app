@@ -1,9 +1,13 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app_template/core/models/opponent.dart';
 import 'package:flutter_app_template/features/initial/initial_state.dart';
 import 'package:template_package/base_widget/base_widget.dart';
 import 'package:template_package/template_bloc/template_bloc.dart';
 import 'package:template_package/template_package.dart';
+
+import 'initial_event.dart';
 
 class InitialPage extends BaseWidget {
   InitialPage(TemplateBloc Function() getBloc) : super(getBloc);
@@ -20,78 +24,100 @@ class _InitialPageState extends BaseState<InitialPage, BaseBloc> {
     return StreamBuilder<ScoreDataState>(
         stream: bloc.getStreamOfType<ScoreDataState>(),
         builder: (BuildContext context, AsyncSnapshot<ScoreDataState> snapshot) {
+          if (snapshot.data == null) return Material(child: Center(child: Text('Loading')));
           return Scaffold(
+              appBar: AppBar(
+                title: Text('PREMIO', style: TextStyle(fontSize: 30)),
+              ),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-              body: Center(
-                  child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Flexible(child: prizeWidget()),
-                    ...snapshot.data!.opponents.map((e) => track(e.name, e.points)),
-                    SizedBox(height: 30),
-                    buttons(),
-                    SizedBox(height: 30),
-                  ],
-                ),
-              )));
+              body: SingleChildScrollView(
+                child: Center(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 40),
+                      prizeWidget(),
+                      SizedBox(height: 40),
+                      ...snapshot.data!.opponents.map((e) => trackWithButton(e)),
+                      SizedBox(height: 40),
+                    ],
+                  ),
+                )),
+              ));
         });
   }
 
   Widget prizeWidget() {
-    return Column(
-      children: [
-        Text('PREMIO', style: TextStyle(fontSize: 40)),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Flexible(child: Image.asset('assets/images/rc-car-removebg-preview.png'))]),
-      ],
-    );
+    return StreamBuilder(
+        stream: bloc.getStreamOfType<PrizeDateState>(),
+        builder: (context, AsyncSnapshot<PrizeDateState> snapshot) {
+          if (snapshot.data == null) return Center(child: Text('Loading'));
+          return Column(
+            children: [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Flexible(child: Image.network(snapshot.data!.imageUrl))]),
+            ],
+          );
+        });
   }
 
-  Widget track(String userName, int points) {
+  Widget trackWithButton(Opponent opponent) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(userName),
+            Text(opponent.name),
             SizedBox(width: 8),
-            Text(points.toString(), style: TextStyle(fontSize: 11)),
+            Text(opponent.points.toString(), style: TextStyle(fontSize: 11)),
           ],
         ),
         SizedBox(height: 8),
-        LinearProgressIndicator(value: points / 100),
+        LinearProgressIndicator(
+          value: opponent.points / 200,
+          backgroundColor: Colors.white24,
+        ),
+        SizedBox(height: 20),
+        addRemoveButton(opponent),
+        SizedBox(height: 50)
       ],
     );
   }
 
-  Widget buttons() {
-    return Container();
+  Widget buttons(List<Opponent> opponents) {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 30.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            addRemoveButton('Francy'),
-            addRemoveButton('Gabry'),
-          ],
-        ),
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: opponents.map((e) => addRemoveButton(e)).toList()),
       ),
     );
   }
 
-  Widget addRemoveButton(String name) {
+  Widget addRemoveButton(Opponent opponent) {
+    if (kIsWeb) return Container();
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FloatingActionButton(onPressed: () {}, child: Icon(Icons.remove)),
-        Padding(padding: const EdgeInsets.all(12.0), child: Text(name)),
-        FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
+        FloatingActionButton(
+            onPressed: () {
+              bloc.event.add(RemovePointEvent('remove_point', opponent: opponent));
+            },
+            child: Icon(Icons.remove),
+            backgroundColor: Colors.red),
+        Padding(padding: const EdgeInsets.all(12.0), child: Text(opponent.name)),
+        FloatingActionButton(
+            onPressed: () {
+              bloc.event.add(AddPointEvent('add_point', opponent: opponent));
+            },
+            child: Icon(Icons.add),
+            backgroundColor: Colors.blue),
       ],
     );
   }

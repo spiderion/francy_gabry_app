@@ -6,3 +6,9 @@ class ScoreDataState extends BaseBlocDataState {
 
   ScoreDataState({required this.opponents});
 }
+
+class PrizeDateState extends BaseBlocDataState {
+  final String imageUrl;
+
+  PrizeDateState({required this.imageUrl});
+}

@@ -1,3 +1,4 @@
+import 'package:flutter_app_template/core/models/opponent.dart';
 import 'package:flutter_app_template/core/models/some_model.dart';
 import 'package:flutter_app_template/core/repositories/initial_repository.dart';
 import 'package:template_package/template_package.dart';
@@ -20,5 +21,13 @@ class SomeUseCase extends UseCase<ResultModel, ResultModel, InitialRepository> {
           requestBehaviour.onListen?.call(_);
         },
         onError: requestBehaviour.onError));
+  }
+
+  void setPoints(RequestObserver<Opponent, dynamic> requestObserver) async {
+     repository.setPoints(requestObserver);
+  }
+
+  void getPrizeUrl(RequestObserver<dynamic, String> requestObserver) {
+    repository.getPrizeUrl(requestObserver);
   }
 }

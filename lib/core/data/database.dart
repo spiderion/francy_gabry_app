@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app_template/core/models/opponent.dart';
 
 import 'dao.dart';
 
@@ -19,4 +20,15 @@ class DataBase extends Dao {
 
   @override
   Future<dynamic> setSomeData(dynamic someData) async {}
+
+  @override
+  Future<void> setPoints(String userID, int newPoints) async {
+    return _db.collection('OPPONENTS').doc(userID).update({Opponent.points_key: newPoints});
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getPrizeUrl() async {
+    final result = await _db.collection('PRIZE').doc('PRIZE').get();
+    return result.data();
+  }
 }

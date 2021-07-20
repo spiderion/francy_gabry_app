@@ -1,4 +1,5 @@
 import 'package:flutter_app_template/core/data/dao.dart';
+import 'package:flutter_app_template/core/models/opponent.dart';
 import 'package:flutter_app_template/core/models/some_model.dart';
 import 'package:template_package/template_package.dart';
 
@@ -27,6 +28,27 @@ class InitialRepository extends BaseRepository {
     } catch (e, s) {
       requestBehaviour.onError?.call(ServerError(message: e.toString()));
       requestBehaviour.onDone?.call();
+    }
+  }
+
+  void setPoints(RequestObserver<Opponent, void> requestObserver) async {
+    try {
+      final result =
+          await _dao.setPoints(requestObserver.requestData!.id, requestObserver.requestData!.points);
+      requestObserver.onListen?.call(result);
+    } catch (e, s) {
+      requestObserver.onError?.call(ServerError(message: e.toString()));
+      requestObserver.onDone?.call();
+    }
+  }
+
+  void getPrizeUrl(RequestObserver<dynamic, String?> requestObserver) async {
+    try {
+      final result = await _dao.getPrizeUrl() ?? {};
+      requestObserver.onListen?.call(result['imageUrl']);
+    } catch (e, s) {
+      requestObserver.onError?.call(ServerError(message: e.toString()));
+      requestObserver.onDone?.call();
     }
   }
 }
