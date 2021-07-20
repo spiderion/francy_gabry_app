@@ -27,10 +27,18 @@ class _InitialPageState extends BaseState<InitialPage, BaseBloc> {
           if (snapshot.data == null) return Material(child: Center(child: Text('Loading')));
           return Scaffold(
               appBar: AppBar(
-                title: Text('PREMIO', style: TextStyle(fontSize: 30)),
-                actions: [InkWell(child: Icon(Icons.more_horiz),onTap: (){
-                  bloc.event.add(MoreTapEvent('more_tap'));
-                },)],
+                title: Text('PREMIO', style: TextStyle(fontSize: 25)),
+                actions: [
+                  InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                      child: Icon(Icons.more_horiz),
+                    ),
+                    onTap: () {
+                      bloc.event.add(MoreTapEvent('more_tap'));
+                    },
+                  )
+                ],
               ),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               body: SingleChildScrollView(
