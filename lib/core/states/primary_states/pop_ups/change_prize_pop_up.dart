@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:template_package/template_package.dart';
 
-class ShowChangePrizePopUp extends BaseBlocPrimaryState {
-  final Function(String? imageUrl) onSaveClick;
-  String? imageUrl;
+class ShowModalReset extends BaseBlocPrimaryState {
+  final Function() onResetClick;
 
-  ShowChangePrizePopUp({required this.onSaveClick});
+  ShowModalReset({required this.onResetClick});
 
   @override
   void call(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         context: context,
         builder: (context) {
-          return AlertDialog(
-              content: Column(
+          return Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                onChanged: (String value) {
-                  imageUrl = value;
-                },
-                decoration: InputDecoration(hintText: Translations.of(context)!.text('enter_image_url')),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Text(
+                  Translations.of(context)!.text("reset_points"),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
               ),
-              SizedBox(height: 50),
-              ElevatedButton(
-                  onPressed: () => onSaveClick.call(imageUrl),
-                  child: Text(Translations.of(context)!.text('save'))),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      onResetClick.call();
+                    },
+                    child: Text(Translations.of(context)!.text('reset'))),
+              )
             ],
-          ));
+          );
         });
   }
 }

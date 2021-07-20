@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_app_template/core/models/opponent.dart';
 import 'package:flutter_app_template/core/models/some_model.dart';
 import 'package:flutter_app_template/core/states/primary_states/error_states/error_full_screen.dart';
+import 'package:flutter_app_template/core/states/primary_states/pop_ups/change_prize_pop_up.dart';
 import 'package:flutter_app_template/core/use_cases/user_use_case.dart';
 import 'package:flutter_app_template/features/initial/initial_event.dart';
 import 'package:flutter_app_template/features/initial/initial_state.dart';
@@ -17,6 +18,7 @@ class InitialBloc extends TemplateBloc {
   final ImagePicker _imagePicker = ImagePicker();
   final scoreDataStateController = StreamController<ScoreDataState>();
   final prizeDataState = StreamController<PrizeDateState>();
+  final List<Opponent> _opponents = [];
 
   InitialBloc(BaseAnalytics analytics, this.useCase) : super(analytics) {
     registerStreams([
@@ -40,7 +42,17 @@ class InitialBloc extends TemplateBloc {
       addPoint(event.opponent);
     } else if (event is PrizeLongPressedEvent) {
       onPrizeLongPressed();
+    } else if (event is MoreTapEvent) {
+      sinkState!.add(ShowModalReset(onResetClick: onResetClick));
     }
+  }
+
+  void onResetClick() {
+    _opponents.forEach((element) {
+      element.points = 0;
+      setPoint(element);
+    });
+    sinkState!.add(MaybePopState());
   }
 
   void onPrizeLongPressed() async {
@@ -97,6 +109,8 @@ class InitialBloc extends TemplateBloc {
   void fetchScoreData() {
     useCase.getSomeData(RequestObserver(onListen: (SomeModel? someModel) {
       final List<Opponent> opponentsResult = someModel?.opponents ?? [];
+      _opponents.clear();
+      _opponents.addAll(opponentsResult);
       scoreDataStateController.sink.add(ScoreDataState(opponents: opponentsResult.toList()));
     }, onError: (Error e) {
       sinkState?.add(ErrorFullScreenState(

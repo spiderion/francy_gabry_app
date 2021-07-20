@@ -14,5 +14,7 @@
   "app_package": "App Package",
   "save": "Save",
   "enter_image_url": "Enter image url",
-  "please_enter_url": "Please enter image url"
+  "please_enter_url": "Please enter image url",
+  "reset_points": "Reset points",
+  "reset": "Reset"
 }

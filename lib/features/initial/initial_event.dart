@@ -29,3 +29,9 @@ class PrizeLongPressedEvent extends BaseBlocEvent {
 
   PrizeLongPressedEvent(String analytic, {this.variable}) : super(analytic);
 }
+
+class MoreTapEvent extends BaseBlocEvent {
+  final dynamic variable;
+
+  MoreTapEvent(String analytic, {this.variable}) : super(analytic);
+}

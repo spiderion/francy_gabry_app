@@ -28,6 +28,9 @@ class _InitialPageState extends BaseState<InitialPage, BaseBloc> {
           return Scaffold(
               appBar: AppBar(
                 title: Text('PREMIO', style: TextStyle(fontSize: 30)),
+                actions: [InkWell(child: Icon(Icons.more_horiz),onTap: (){
+                  bloc.event.add(MoreTapEvent('more_tap'));
+                },)],
               ),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               body: SingleChildScrollView(
